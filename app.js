@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: 'yelpcampsecretkey',
+  secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret!',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -79,7 +79,5 @@ passport.deserializeUser(User.deserializeUser());
 // Routers
 app.use(authRouter);
 app.use(campgroundsRouter);
-const a=async ()=>await User.find({});
-const b=a().then(console.log(this.username));
 
 app.listen(3000,()=>console.log("app listen to port=3000 address"))

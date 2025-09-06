@@ -2,10 +2,14 @@ const express = require('express');
 const Campground = require('../models/campground');
 const { isLoggedIn, campgroundValidate } = require('../middleware');
 const router = express.Router();
+const multer = require('multer');
+const { storage } = require('../cloudinary');
+const upload = multer({ storage });
 
 // Get all campgrounds
 router.get('/campgrounds', async (req, res) => {
   const campgrounds = await Campground.find({});
+  campgrounds.populate('author').populate('reviews').populate({path:'reviews',populate:{path:'author'}});
   res.render('campgrounds/index', { campgrounds });
 });
 
@@ -15,9 +19,10 @@ router.get('/campgrounds/new', isLoggedIn, (req, res) => {
 });
 
 // Create new campground
-router.post('/campgrounds', isLoggedIn, campgroundValidate, async (req, res) => {
+router.post('/campgrounds', isLoggedIn, campgroundValidate,upload.array("image"), async (req, res) => {
   const campground = new Campground(req.body);
   campground.author = req.user._id;
+  campground.image = req.files.map(f=>({url:f.path,filename:f.filename}));
   await campground.save();
   req.flash('success', 'Campground created successfully!');
   res.redirect(`/campgrounds/${campground._id}`);
@@ -45,10 +50,19 @@ router.get('/campgrounds/:id/edit', isLoggedIn, async (req, res) => {
 
 // Update campground
 router.put('/campgrounds/:id', isLoggedIn, campgroundValidate, async (req, res) => {
-  const campground = await Campground.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  req.flash('success', 'Campground updated successfully!');
-  res.redirect(`/campgrounds/${campground._id}`);
-});
+  const campground = await Campground.findById(req.params.id);
+  if (!campground) {
+    req.flash('error', 'Campground not found');
+    return res.redirect('/campgrounds');
+  }
+  if (campground.author = req.user._id)
+  {
+    campground.set(req.body.campground);
+    campground.imageUrls.push(...req.files.map(f=>({url:f.path,filename:f.filename}))); 
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`)
+    
+};})
 
 // Delete campground
 router.delete('/campgrounds/:id', isLoggedIn, async (req, res) => {
