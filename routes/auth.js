@@ -17,7 +17,7 @@ router.post('/register', userValidate, async (req, res, next) => {
     req.login(registeredUser, err => {
       if (err) return next(err);
       req.flash('success', 'Registration successful! Welcome to YelpCamp.');
-      res.redirect('/');
+      res.redirect('/campgrounds');
     });
   } catch (e) {
     req.flash('error', e.message);
@@ -35,7 +35,7 @@ router.post('/login', passport.authenticate('local', {
   failureFlash: true
 }), (req, res) => {
   req.flash('success', 'Welcome back!');
-  res.redirect('/');
+  res.redirect('/campgrounds');
 });
 
 module.exports = router;

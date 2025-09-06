@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Campgrounds</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="mb-4">All Campgrounds</h1>
+    <% if (success && success.length) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error && error.length) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <a href="/campgrounds/new" class="btn btn-primary mb-3">Add New Campground</a>
+    <div class="row">
+      <% campgrounds.forEach(campground => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <% if (campground.imageUrl) { %>
+              <img src="<%= campground.imageUrl %>" class="img-top" alt="<%= campground.title %>">
+            <% } %>
+            <div class="card-body">
+              <h5 class="card-title"><%= campground.title %></h5>
+              <p class="card-text"><%= campground.description %></p>
+              <p class="card-text"><strong>Location:</strong> <%= campground.location %></p>
+              <p class="card-text"><strong>Price:</strong> $<%= campground.price %></p>
+              <a href="/campgrounds/<%= campground._id %>" class="btn btn-outline-primary">View</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>
