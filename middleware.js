@@ -13,8 +13,7 @@ const campgroundSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required(),
   location: Joi.string().required(),
-  price: Joi.number().required(),
-  imageUrl: Joi.string().uri().optional()
+  price: Joi.number().required()
 });
 
 function campgroundValidate(req, res, next) {
@@ -28,6 +27,7 @@ function campgroundValidate(req, res, next) {
 // User validation middleware
 const userSchema = Joi.object({
   username: Joi.string().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().min(6).required()
 });
 

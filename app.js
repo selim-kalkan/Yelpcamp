@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 const express=require("express");
+const engine = require('ejs-mate');
 const mongoose=require("mongoose");
 const path = require("path");
 const session = require("express-session");
@@ -56,8 +57,12 @@ app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   next();
 });
-
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
 // Set EJS as the view engine
+app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -76,8 +81,20 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Home page route
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+
 // Routers
 app.use(authRouter);
 app.use(campgroundsRouter);
+
+// Error handler route
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.render('error', { err });
+});
 
 app.listen(3000,()=>console.log("app listen to port=3000 address"))
